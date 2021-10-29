@@ -1,16 +1,16 @@
-static const int MLERROR = 0;
-static const int MLVERBOSE = 1;
-static const int MLINFO = 2;
-static const int MLDEBUG = 3;
+static const int DGERROR = 0;
+static const int DGVERBOSE = 1;
+static const int DGINFO = 2;
+static const int DGDEBUG = 3;
 
 
 class DGLog extends Managed {
 	
-	protected static ref MLLogFileInstance m_MapLinkLogFileInstance;
+	protected static ref DGLogFileInstance m_DGLogFileInstance;
 	
 	static DGLogFileInstance GetInstance(){
-		if (!m_MapLinkLogFileInstance){m_MapLinkLogFileInstance = new MLLogFileInstance;}
-		return m_MapLinkLogFileInstance;
+		if (!m_DGLogFileInstance){m_DGLogFileInstance = new DGLogFileInstance;}
+		return m_DGLogFileInstance;
 	}
 	
 	static void Log(string text, int level = 1) {
@@ -18,16 +18,16 @@ class DGLog extends Managed {
 	}
 	
 	static void Info(string text){
-		GetInstance().DoLog(text, MLINFO);
+		GetInstance().DoLog(text, DGINFO);
 	}
 	
 	static void Debug(string text){
-		GetInstance().DoLog(text, MLDEBUG);
+		GetInstance().DoLog(text, DGDEBUG);
 	}
 
 	static void Err(string text){
 		Error2("[DiscordGear] Error", text);
-		GetInstance().DoLog(text, MLERROR);
+		GetInstance().DoLog(text, DGERROR);
 	}
 	
 	static void SetLogLevels(int level, int apiLevel = -99){
@@ -163,16 +163,16 @@ class DGLogFileInstance extends Managed {
 	
 	protected static string GetTag(int level){
 		switch ( level ) {
-			case MLERROR:
+			case DGERROR:
 				return "[ERROR] ";
 				break;
-			case MLVERBOSE:
+			case DGVERBOSE:
 				return "[VERBOSE] ";
 				break;
-			case MLDEBUG:
+			case DGDEBUG:
 				return "[DEBUG] ";
 				break;
-			case MLINFO:
+			case DGINFO:
 				return "[INFO] ";
 				break;
 			default:
@@ -186,16 +186,16 @@ class DGLogFileInstance extends Managed {
 		string sLevel = "INFO";
 		
 		switch ( level ) {
-			case MLERROR:
+			case DGERROR:
 				sLevel = "ERROR";
 				break;
-			case MLVERBOSE:
+			case DGVERBOSE:
 				sLevel =  "VERBOSE";
 				break;
-			case MLDEBUG:
+			case DGDEBUG:
 				sLevel =  "DEBUG";
 				break;
-			case MLINFO:
+			case DGINFO:
 				sLevel =  "INFO";
 				break;
 			default:

@@ -3,7 +3,7 @@ class DiscordRoleGearConfig extends UApiConfigBase {
 	string ConfigVersion = "0";
 	static string CurrentVersion = "0";
 	
-	
+	autoptr array<autoptr DGGearSets> GearSets = new array<autoptr DGGearSets>;
 	
 	
 	int LogLevel_File = 3;
@@ -16,6 +16,7 @@ class DiscordRoleGearConfig extends UApiConfigBase {
 		if it doesn't exsit the API will create the file
 	
 		*/
+		GearSets.Insert(new DGGearSets());
 	}
 
 	override void OnDataReceive(){
@@ -32,7 +33,6 @@ class DiscordRoleGearConfig extends UApiConfigBase {
 		
 		
 	}	
-	
 	
 	override void Load(){
 		if (!m_DataReceived){
@@ -52,18 +52,26 @@ class DiscordRoleGearConfig extends UApiConfigBase {
 	
 	
 	override string ToJson(){
-		return UApiJSONHandler<MapLinkConfig>.ToString(this);
+		return UApiJSONHandler<DiscordRoleGearConfig>.ToString(this);
 	}
 	
 	// This is called by the API System on the successfull response from the API
 	override void OnSuccess(string data, int dataSize) {
-		if (UApiJSONHandler<MapLinkConfig>.FromString(data, this)){
+		if (UApiJSONHandler<DiscordRoleGearConfig>.FromString(data, this)){
 			OnDataReceive();
 		} else {
 			DGLog.Err("CallBack Failed errorCode: Invalid Data");
 		}
 	}
 	
+	void CreateItems(EntityAI parent, UApiDiscordUser user){
+		if (!GearSets){
+			return;
+		}
+		for (int i = 0; i < GearSets.Count(); i++){
+			GearSets.Get(i).CreateItem(parent, user);
+		}
+	}
 	
 }
 
