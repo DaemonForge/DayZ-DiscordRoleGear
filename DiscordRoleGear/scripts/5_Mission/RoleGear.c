@@ -41,9 +41,14 @@ class DGGearSets extends Managed {
 		DGGearData data;
 		
 		EntityAI item;
-		for (int i = 0; i < user.Roles.Count(); i++){
+		int i = 0;
+		for (i = 0; i < user.Roles.Count(); i++){
 			if (RoleToGearMap.Find(user.Roles.Get(i),data)){
-				break;
+				if (data.AdditionalRequiredRole != "" && user.Roles.Find(data.AdditionalRequiredRole) == -1){
+					data = NULL;
+				} else {
+					break;
+				}
 			}
 		}
 		if (!data){
@@ -61,12 +66,27 @@ class DGGearSets extends Managed {
 			DGLog.Err("Attachment Slot " + AttachmentSlot + " not valid");
 		}
 		if (item){
-			float maxhealth = item.GetHealth("","");
+			float maxhealth = item.GetMaxHealth("","");
 			float rndHealth = Math.QRandomFloat(data.HealthPercentageLow,data.HealthPercentageHigh) / 100;
 			if (rndHealth < maxhealth){
 				item.SetHealth("","", maxhealth * rndHealth);
 			}
-		
+			ItemBase itemb = ItemBase.Cast(item);
+			if (itemb && itemb.HasQuantity()){
+				itemb.SetQuantity(Math.QRandomFloat(data.QuanityLow,data.QuanityHigh));
+			}
+			if (data.ItemAttachments && data.ItemAttachments.Count() > 0){
+				for (i = 0; i < data.ItemAttachments.Count(); i++){
+					EntityAI attach = EntityAI.Cast(item.GetInventory().CreateAttachment(data.ItemAttachments.Get(i)));
+					if (data.HealthToAttachments){
+						float maxhealthAttach = attach.GetMaxHealth("","");
+						float rndHealthAttach = Math.QRandomFloat(data.HealthPercentageLow,data.HealthPercentageHigh) / 100;
+						if (rndHealthAttach < maxhealthAttach){
+							attach.SetHealth("","", maxhealthAttach * rndHealthAttach);
+						}
+					}
+				}
+			}
 		}
 		return item;
 	}
@@ -81,6 +101,7 @@ class DGGearData extends Managed {
 	float QuanityLow = -1;
 	autoptr TStringArray ItemAttachments = {};
 	bool HealthToAttachments = true;
+	string AdditionalRequiredRole = "";
 	
 	void DGGearData(string type){
 		Type = type;
